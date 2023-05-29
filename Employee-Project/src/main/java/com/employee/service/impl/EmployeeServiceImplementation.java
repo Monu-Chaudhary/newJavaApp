@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
     @Autowired
-    private RestTemplate restTemplate;
+    private WebClient webClient;
 
     @Override
     public Employee saveEmployee(Employee employee) {
@@ -31,9 +32,9 @@ public class EmployeeServiceImplementation implements EmployeeService {
         EmployeeDto employeeDto = mapEmployeeToDto(employee);
         int departmentId = employee.getDepartmentId();
 
-        ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8082/api/department/get/" + departmentId, DepartmentDto.class);
-        DepartmentDto departmentDto = responseEntity.getBody();
-        System.out.println("Status CODE::" + responseEntity.getStatusCode());
+        DepartmentDto departmentDto = webClient.get()
+                .uri("http://localhost:8082/api/department/get/" + departmentId)
+                .retrieve().bodyToMono(DepartmentDto.class).block();
 
         return new ResponseDto(departmentDto, employeeDto);
     }
@@ -66,6 +67,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
         e1.setPassword(e.getPassword());
         e1.setFirstName(e.getFirstName());
         e1.setLastName(e.getLastName());
+        e1.setDepartmentId(e.getDepartmentId());
         return this.employeeRepository.save(e1);
     }
 }
