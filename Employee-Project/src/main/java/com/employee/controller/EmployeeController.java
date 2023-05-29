@@ -1,5 +1,6 @@
 package com.employee.controller;
 
+import com.employee.dto.ResponseDto;
 import com.employee.entity.Employee;
 import com.employee.service.EmployeeService;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -24,9 +25,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/fetch/{id}")
-    public ResponseEntity<Employee> getEmployee(@PathVariable("id") Integer id) {
-        Employee e1 = this.employeeService.getEmployee(id);
-        return new ResponseEntity<>(e1, HttpStatus.OK);
+    public ResponseEntity<ResponseDto> getEmployee(@PathVariable("id") Integer id) {
+        ResponseDto responseDto= this.employeeService.getEmployee(id);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @GetMapping("/get")
